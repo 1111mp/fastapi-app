@@ -28,4 +28,3 @@ async def db_transaction() -> AsyncGenerator[None, None]:
             session.commit = original_commit
             await session.rollback()
             app.dependency_overrides.clear()
-            app.dependency_overrides.clear()

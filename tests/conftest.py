@@ -25,6 +25,15 @@ async def async_client() -> AsyncGenerator[AsyncClient, None]:
         yield ac
 
 
+@pytest_asyncio.fixture(scope="function")
+async def unauthenticated_client() -> AsyncGenerator[AsyncClient, None]:
+    async with AsyncClient(
+        transport=ASGITransport(app),
+        base_url="http://testserver",
+    ) as ac:
+        yield ac
+
+
 @pytest_asyncio.fixture(scope="module")
 async def authorized_client(
     async_client: AsyncClient,

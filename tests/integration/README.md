@@ -19,7 +19,7 @@ uv run pytest -m integration
 
 ## How to mark integration tests
 
-For files like `tests/api/routes/post_test.py`, add module-level marker:
+For files like `tests/integration/api/post_test.py`, add module-level marker:
 
 ```python
 import pytest
@@ -40,4 +40,4 @@ Run commands:
 
 - only integration: `uv run pytest -m integration`
 - exclude integration: `uv run pytest -m "not integration"`
-- run one file: `uv run pytest tests/api/routes/post_test.py -m integration`
+- run one file: `uv run pytest tests/integration/api/post_test.py -m integration`

@@ -95,6 +95,10 @@ METRICS_ENABLED=true
 OTEL_ENABLED=false
 OTEL_EXPORTER_OTLP_ENDPOINT=""
 OTEL_EXPORTER_OTLP_INSECURE=true
+
+# Test
+FIRST_SUPERUSER=admin@example.com
+FIRST_SUPERUSER_PASSWORD=password
 ```
 
 ### 3) 启动基础依赖（PostgreSQL/Redis）
@@ -166,14 +170,6 @@ uv run pytest
 
 # 生成覆盖率报告（终端 + coverage.xml）
 uv run pytest --cov=app --cov-report=term-missing --cov-report=xml
-```
-
-测试目录参考 `full-stack-fastapi-template` 的组织方式，按类型分层：
-
-```text
-tests/
-├── conftest.py         # 全局 fixture（TestClient 等）
-├── api/                # 接口与路由测试
 ```
 
 ### 集成测试数据回滚（避免脏数据）
