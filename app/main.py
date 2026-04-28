@@ -11,7 +11,9 @@ from app.core.config import settings
 from app.core.db import check_db_connection
 from app.core.exceptions import global_exception_handler
 from app.core.logging import setup_logging
+from app.core.observability import build_ops_router, setup_metrics
 from app.core.redis import redis_client
+from app.core.tracing import setup_tracing
 from app.scheduler.scheduler import shutdown_scheduler, start_scheduler
 from app.workers.provider import broker
 
@@ -26,8 +28,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     """
     Application lifespan manager.
     """
-    # Set up logging
-    setup_logging()
 
     # Postgres
     await check_db_connection()
@@ -47,6 +47,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     await redis_client.close()
 
 
+# Set up logging
+setup_logging()
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
@@ -55,6 +58,10 @@ app = FastAPI(
 )
 
 app.add_exception_handler(Exception, global_exception_handler)
+
+# Observability
+setup_metrics(app)
+setup_tracing(app)
 
 app.add_middleware(CorrelationIdMiddleware)
 app.add_middleware(
@@ -68,6 +75,7 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
+app.include_router(build_ops_router())
 
 
 if __name__ == "__main__":

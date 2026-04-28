@@ -33,6 +33,7 @@ class Settings(BaseSettings):
 
     # Basic App Info
     PROJECT_NAME: str
+    VERSION: str = "1.0.0"
     PORT: int = 8000
     FRONTEND_HOST: str = "http://localhost:5173"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
@@ -96,6 +97,15 @@ class Settings(BaseSettings):
     # Github OAuth
     GITHUB_CLIENT_ID: str
     GITHUB_CLIENT_SECRET: str
+
+    # Observability
+    SLOW_QUERY_THRESHOLD_MS: int = 1000  # Log queries slower than this (ms)
+    METRICS_ENABLED: bool = True
+
+    # OpenTelemetry
+    OTEL_ENABLED: bool = False
+    OTEL_EXPORTER_OTLP_ENDPOINT: str | None = None
+    OTEL_EXPORTER_OTLP_INSECURE: bool = True
 
 
 settings = Settings()  # type: ignore

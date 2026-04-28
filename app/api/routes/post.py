@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
+from opentelemetry import trace
+from opentelemetry.trace import Status, StatusCode
 
 from app.auth.deps import current_active_user
 from app.db.post import SQLAlchemyPostDatabase, get_post_db
@@ -6,6 +8,7 @@ from app.models.user import User
 from app.schemas.post import PostCreate, PostPayload
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
+tracer = trace.get_tracer("app.api.routes.post")
 
 
 @router.post("/", response_model=PostPayload)
@@ -24,4 +27,19 @@ async def get_post(
     id: int,
     db: SQLAlchemyPostDatabase = Depends(get_post_db),
 ):
-    return await db.get(id)
+    with tracer.start_as_current_span("posts.get_post") as span:
+        span.set_attribute("post.id", id)
+
+        post = await db.get(id)
+
+        span.set_attribute("post.found", post is not None)
+        if post is None:
+            span.set_status(Status(StatusCode.ERROR, "Post not found"))
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Post not found"
+            )
+        else:
+            span.set_status(Status(StatusCode.OK))
+            span.set_attribute("post.created_by_id", str(post.created_by_id))
+
+        return post

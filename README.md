@@ -86,6 +86,15 @@ REDIS_PASSWORD=redispass
 
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
+
+# Observability
+SLOW_QUERY_THRESHOLD_MS=1000
+METRICS_ENABLED=true
+
+# OpenTelemetry
+OTEL_ENABLED=false
+OTEL_EXPORTER_OTLP_ENDPOINT=""
+OTEL_EXPORTER_OTLP_INSECURE=true
 ```
 
 ### 3) 启动基础依赖（PostgreSQL/Redis）
@@ -181,6 +190,12 @@ uv run taskiq scheduler app.workers.scheduler:scheduler --fs-discover --tasks-pa
 - `POST /posts/`：创建 Post（需要登录）
 - `GET /posts/{id}`：查询 Post（需要登录）
 
+### Ops（运维可观测接口）
+
+- `GET /healthz`：存活探针（liveness）
+- `GET /readyz`：就绪探针（readiness，检查 DB/Redis）
+- `GET /metrics`：Prometheus 指标（由 instrumentator 自动采集）
+
 ---
 
 ## CORS 配置说明
@@ -202,6 +217,20 @@ uv run taskiq scheduler app.workers.scheduler:scheduler --fs-discover --tasks-pa
 2. **Taskiq Scheduler**（`app/workers/tasks.py` 中使用 `schedule=[{"cron": "* * * * *"}]`）
 
 如果你只需要一种调度方式，建议在实际项目中保留一种以降低复杂度。
+
+---
+
+## 可观测性与稳定性
+
+本项目已提供基础可观测能力：
+
+- `/healthz` + `/readyz`：容器探针与依赖可用性检查
+- `/metrics`：Prometheus 文本格式指标
+  - 由 `prometheus-fastapi-instrumentator` 自动采集 HTTP 指标
+- OpenTelemetry tracing（可选开启）
+  - `OTEL_ENABLED=true` 后自动启用 FastAPI / SQLAlchemy / Redis tracing
+  - 设置 `OTEL_EXPORTER_OTLP_ENDPOINT` 可上报到 OTLP Collector
+  - gRPC 本地示例：`OTEL_EXPORTER_OTLP_ENDPOINT=localhost:4319` + `OTEL_EXPORTER_OTLP_INSECURE=true`
 
 ---
 
