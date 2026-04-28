@@ -10,6 +10,11 @@ logs/
 # Virtual environments
 .venv
 
+# Test coverage reports
+.coverage
+htmlcov
+coverage.xml
+
 # Environments
 .env
 .env.local

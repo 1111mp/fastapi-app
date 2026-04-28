@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 x-db-environment: &x-db-environment
   POSTGRES_DB: ${POSTGRES_DB}
@@ -29,6 +29,13 @@ x-app-environment: &x-app-environment
   # GitHub OAuth
   GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
   GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+  # Observability
+  SLOW_QUERY_THRESHOLD_MS: ${SLOW_QUERY_THRESHOLD_MS}
+  METRICS_ENABLED: ${METRICS_ENABLED}
+  # OpenTelemetry
+  OTEL_ENABLED: ${OTEL_ENABLED}
+  OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+  OTEL_EXPORTER_OTLP_INSECURE: ${OTEL_EXPORTER_OTLP_INSECURE}
 
 services:
   fastapi-app:
@@ -36,7 +43,7 @@ services:
       context: .
     container_name: fastapi-app
     ports:
-      - "80:80"
+      - '80:80'
     environment:
       <<: *x-app-environment
       PYTHONUNBUFFERED: 1
@@ -52,23 +59,23 @@ services:
     image: redis:8.4-alpine
     container_name: redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     environment:
       <<: *x-redis-environment
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD}', 'ping']
       interval: 5s
       timeout: 3s
       retries: 5
     command:
       [
-        "redis-server",
-        "--appendonly",
-        "yes",
-        "--requirepass",
-        "${REDIS_PASSWORD}",
+        'redis-server',
+        '--appendonly',
+        'yes',
+        '--requirepass',
+        '${REDIS_PASSWORD}',
       ]
     networks:
       - fastapi-network
@@ -79,10 +86,10 @@ services:
     environment:
       <<: *x-db-environment
     ports:
-      - "5432:5432"
+      - '5432:5432'
     healthcheck:
       test:
-        ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+        ['CMD', 'pg_isready', '-U', '${POSTGRES_USER}', '-d', '${POSTGRES_DB}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -95,7 +102,7 @@ services:
     build:
       context: .
     container_name: taskiq-worker
-    command: ["/app/.venv/bin/taskiq", "worker", "app.workers.provider:broker"]
+    command: ['/app/.venv/bin/taskiq', 'worker', 'app.workers.provider:broker']
     environment:
       <<: *x-app-environment
       PYTHONUNBUFFERED: 1
@@ -111,12 +118,12 @@ services:
     container_name: taskiq-scheduler
     command:
       [
-        "/app/.venv/bin/taskiq",
-        "scheduler",
-        "app.workers.scheduler:scheduler",
-        "--fs-discover",
-        "--tasks-pattern",
-        "app/**/tasks.py",
+        '/app/.venv/bin/taskiq',
+        'scheduler',
+        'app.workers.scheduler:scheduler',
+        '--fs-discover',
+        '--tasks-pattern',
+        'app/**/tasks.py',
       ]
     environment:
       <<: *x-app-environment

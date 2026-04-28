@@ -57,4 +57,3 @@ async def check_db_connection() -> None:
             error=str(e),
         )
         raise
-        raise

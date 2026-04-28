@@ -1,8 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer
 from pydantic.alias_generators import to_camel
+from tzlocal import get_localzone
+
+_LOCAL_TZ = get_localzone()
 
 
 class PostPayload(BaseModel):
@@ -23,7 +26,10 @@ class PostPayload(BaseModel):
 
     @field_serializer("created_at", "updated_at")
     def format_datetime(self, value: datetime) -> str:
-        return value.strftime("%Y-%m-%d %H:%M:%S")
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+
+        return value.astimezone(_LOCAL_TZ).strftime("%Y-%m-%d %H:%M:%S")
 
 
 class PostCreate(BaseModel):

@@ -1,7 +1,7 @@
 import secrets
 from typing import Annotated, Any, Literal
 
-from pydantic import AnyUrl, BeforeValidator, PostgresDsn, computed_field
+from pydantic import AnyUrl, BeforeValidator, EmailStr, PostgresDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -106,6 +106,9 @@ class Settings(BaseSettings):
     OTEL_ENABLED: bool = False
     OTEL_EXPORTER_OTLP_ENDPOINT: str | None = None
     OTEL_EXPORTER_OTLP_INSECURE: bool = True
+
+    FIRST_SUPERUSER: EmailStr
+    FIRST_SUPERUSER_PASSWORD: str
 
 
 settings = Settings()  # type: ignore

@@ -155,6 +155,55 @@ uv run alembic upgrade head
 uv run alembic downgrade -1
 ```
 
+### 运行单元测试
+
+```bash
+# 首次安装（包含 dev 依赖）
+uv sync --group dev
+
+# 执行全部测试（默认附带 coverage）
+uv run pytest
+
+# 生成覆盖率报告（终端 + coverage.xml）
+uv run pytest --cov=app --cov-report=term-missing --cov-report=xml
+```
+
+测试目录参考 `full-stack-fastapi-template` 的组织方式，按类型分层：
+
+```text
+tests/
+├── conftest.py         # 全局 fixture（TestClient 等）
+├── api/                # 接口与路由测试
+```
+
+### 集成测试数据回滚（避免脏数据）
+
+项目提供了 `tests/integration/conftest.py` 的 `db_transaction` 夹具：
+
+- 每个测试独立创建 `AsyncSession`。
+- 覆盖 `get_async_session`，确保接口走测试会话。
+- 测试期间把 `session.commit()` 临时替换为 `session.flush()`，结束后统一 `rollback()`。
+- 默认 `uv run pytest` 不执行集成测试（只跑 `not integration`）。
+
+```bash
+# 显式执行集成测试
+uv run pytest -m integration
+```
+
+`integration` 标记用法示例（如 `tests/api/routes/post_test.py`）：
+
+```python
+import pytest
+
+pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
+```
+
+运行方式：
+
+- 只跑集成测试：`uv run pytest -m integration`
+- 排除集成测试：`uv run pytest -m "not integration"`
+- 跑某个集成测试文件：`uv run pytest tests/api/routes/post_test.py -m integration`
+
 ### 启动 Taskiq Worker / Scheduler（本地）
 
 ```bash

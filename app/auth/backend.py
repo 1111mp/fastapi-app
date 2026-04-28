@@ -7,7 +7,10 @@ from httpx_oauth.clients.github import GitHubOAuth2
 
 from app.core.config import settings
 
-cookie_transport = CookieTransport(cookie_max_age=3600)
+cookie_transport = CookieTransport(
+    cookie_max_age=3600,
+    cookie_secure=settings.ENVIRONMENT == "production",
+)
 
 
 def get_jwt_strategy() -> JWTStrategy:
