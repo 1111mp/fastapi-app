@@ -40,6 +40,9 @@ app/
 ├── schemas/           # Pydantic 数据模型
 ├── scheduler/         # APScheduler 任务定义
 └── workers/           # Taskiq broker、任务与调度
+tests/
+├── integration/       # 集成测试（End-to-End）
+└── unit/              # 单元测试（模块级别）
 alembic/               # 数据库迁移
 ```
 

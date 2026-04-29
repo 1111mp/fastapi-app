@@ -25,4 +25,4 @@ class Post(TimestampsMixin, Base):
         ForeignKey("user.id", ondelete="CASCADE")
     )
 
-    created_by: Mapped["User"] = relationship(back_populates="posts")
+    created_by: Mapped[User] = relationship(back_populates="posts")

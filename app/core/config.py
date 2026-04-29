@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     )
 
     # Basic App Info
-    PROJECT_NAME: str
+    PROJECT_NAME: str = "FastAPI App"
     VERSION: str = "1.0.0"
     PORT: int = 8000
     FRONTEND_HOST: str = "http://localhost:5173"
@@ -48,7 +48,7 @@ class Settings(BaseSettings):
         list[AnyUrl] | str, BeforeValidator(parse_cors)
     ] = []
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def assemble_cors_origins(self) -> list[str]:
         return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [
@@ -56,13 +56,13 @@ class Settings(BaseSettings):
         ]
 
     # Postgres
-    POSTGRES_HOST: str
+    POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
-    POSTGRES_USER: str
+    POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = ""
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
         return PostgresDsn.build(
@@ -81,7 +81,7 @@ class Settings(BaseSettings):
     REDIS_PASSWORD: str | None = None
     REDIS_URL: str | None = None
 
-    @computed_field
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def REDIS_DSN(self) -> str:
         """
@@ -95,8 +95,8 @@ class Settings(BaseSettings):
         return f"redis://{auth}{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
 
     # Github OAuth
-    GITHUB_CLIENT_ID: str
-    GITHUB_CLIENT_SECRET: str
+    GITHUB_CLIENT_ID: str = ""
+    GITHUB_CLIENT_SECRET: str = ""
 
     # Observability
     SLOW_QUERY_THRESHOLD_MS: int = 1000  # Log queries slower than this (ms)
@@ -107,8 +107,8 @@ class Settings(BaseSettings):
     OTEL_EXPORTER_OTLP_ENDPOINT: str | None = None
     OTEL_EXPORTER_OTLP_INSECURE: bool = True
 
-    FIRST_SUPERUSER: EmailStr
-    FIRST_SUPERUSER_PASSWORD: str
+    FIRST_SUPERUSER: EmailStr = "admin@example.com"
+    FIRST_SUPERUSER_PASSWORD: str = "change_this"
 
 
-settings = Settings()  # type: ignore
+settings = Settings()

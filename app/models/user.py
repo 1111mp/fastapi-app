@@ -23,4 +23,4 @@ class User(TimestampsMixin, SQLAlchemyBaseUserTableUUID, Base):
         "OAuthAccount", lazy="joined"
     )
 
-    posts: Mapped[list["Post"]] = relationship(back_populates="created_by")
+    posts: Mapped[list[Post]] = relationship(back_populates="created_by")

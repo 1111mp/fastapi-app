@@ -2,23 +2,26 @@ import logging
 import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
+from typing import Any
 
 import structlog
 from asgi_correlation_id import correlation_id
 from structlog.types import Processor
+from structlog.typing import EventDict
 
 from app.core.config import settings
 
 
 class MaxLevelFilter(logging.Filter):
-    def __init__(self, max_level):
+    def __init__(self, max_level: int) -> None:
+        super().__init__()
         self.max_level = max_level
 
     def filter(self, record: logging.LogRecord) -> bool:
-        return record.levelno <= self.max_level
+        return bool(record.levelno <= self.max_level)
 
 
-def add_correlation_id(_, __, event_dict):
+def add_correlation_id(_: Any, __: str, event_dict: EventDict) -> EventDict:
     """Inject correlation ID into logs."""
     request_id = correlation_id.get()
     if request_id:
@@ -26,7 +29,7 @@ def add_correlation_id(_, __, event_dict):
     return event_dict
 
 
-def setup_logging():
+def setup_logging() -> None:
     """Configure structlog + stdlib logging."""
 
     # =====================
@@ -59,8 +62,8 @@ def setup_logging():
     # 3. structlog config
     # =====================
     structlog.configure(
-        processors=base_processors
-        + [
+        processors=[
+            *base_processors,
             structlog.stdlib.filter_by_level,
             structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
         ],

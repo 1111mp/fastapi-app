@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 logger = structlog.get_logger("api.exceptions")
 
 
-async def global_exception_handler(request: Request, exc: Exception):
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     status_code = 500
     detail = "Internal Server Error"
     payload = None

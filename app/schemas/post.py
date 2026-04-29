@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_serializer
@@ -27,7 +27,7 @@ class PostPayload(BaseModel):
     @field_serializer("created_at", "updated_at")
     def format_datetime(self, value: datetime) -> str:
         if value.tzinfo is None:
-            value = value.replace(tzinfo=timezone.utc)
+            value = value.replace(tzinfo=UTC)
 
         return value.astimezone(_LOCAL_TZ).strftime("%Y-%m-%d %H:%M:%S")
 

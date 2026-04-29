@@ -6,12 +6,12 @@ logger = structlog.get_logger("workers.tasks")
 
 
 @broker.task
-async def send_email(email: str):
+async def send_email(email: str) -> None:
     logger.info("send_email", email=email)
 
 
 @broker.task(schedule=[{"cron": "* * * * *"}])
-async def scheduled_task():
+async def scheduled_task() -> None:
     """
     Scheduled task that runs on a cron schedule.
     Scheduled to run every minute.

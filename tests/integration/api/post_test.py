@@ -8,7 +8,7 @@ pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
 async def test_create_post(
     authorized_client: AsyncClient,
-):
+) -> None:
     data = {
         "title": "Test Post",
         "content": "This is a test post.",
@@ -28,7 +28,7 @@ async def test_create_post(
 
 async def test_get_post(
     authorized_client: AsyncClient,
-):
+) -> None:
     create_data = {
         "title": "Read Target",
         "content": "Created before get.",
@@ -53,7 +53,7 @@ async def test_get_post(
 
 async def test_get_post_not_found(
     authorized_client: AsyncClient,
-):
+) -> None:
     response = await authorized_client.get(
         f"{settings.API_V1_PREFIX}/posts/999999",
     )
@@ -65,7 +65,7 @@ async def test_get_post_not_found(
 
 async def test_create_post_unauthorized(
     unauthenticated_client: AsyncClient,
-):
+) -> None:
     response = await unauthenticated_client.post(
         f"{settings.API_V1_PREFIX}/posts/",
         json={"title": "No Auth", "content": "Should fail."},
@@ -76,7 +76,7 @@ async def test_create_post_unauthorized(
 
 async def test_get_post_unauthorized(
     unauthenticated_client: AsyncClient,
-):
+) -> None:
     response = await unauthenticated_client.get(
         f"{settings.API_V1_PREFIX}/posts/1",
     )
@@ -86,7 +86,7 @@ async def test_get_post_unauthorized(
 
 async def test_create_post_validation_error(
     authorized_client: AsyncClient,
-):
+) -> None:
     response = await authorized_client.post(
         f"{settings.API_V1_PREFIX}/posts/",
         json={"title": "Missing content"},

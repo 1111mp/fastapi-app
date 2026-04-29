@@ -1,7 +1,9 @@
 import uuid
+from collections.abc import AsyncGenerator
 
 from fastapi import Depends
 from fastapi_users import BaseUserManager, UUIDIDMixin
+from fastapi_users.db import SQLAlchemyUserDatabase
 
 from app.core.config import settings
 from app.db.user import get_user_db
@@ -16,5 +18,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     verification_token_secret = settings.SECRET_KEY
 
 
-async def get_user_manager(user_db=Depends(get_user_db)):
+async def get_user_manager(
+    user_db: SQLAlchemyUserDatabase[User, uuid.UUID] = Depends(get_user_db),
+) -> AsyncGenerator[UserManager]:
     yield UserManager(user_db)

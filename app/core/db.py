@@ -1,8 +1,11 @@
 from collections.abc import AsyncGenerator
 from time import perf_counter
+from typing import Any
 
 import structlog
 from sqlalchemy import event, text
+from sqlalchemy.engine import Connection
+from sqlalchemy.engine.interfaces import DBAPICursor
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.core.config import settings
@@ -23,12 +26,26 @@ async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit
 
 
 @event.listens_for(engine.sync_engine, "before_cursor_execute")
-def _before_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+def _before_cursor_execute(
+    conn: Connection,
+    _cursor: DBAPICursor,
+    _statement: str,
+    _parameters: Any,
+    _context: Any,
+    _executemany: bool,
+) -> None:
     conn.info.setdefault("query_start_time", []).append(perf_counter())
 
 
 @event.listens_for(engine.sync_engine, "after_cursor_execute")
-def _after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+def _after_cursor_execute(
+    conn: Connection,
+    _cursor: DBAPICursor,
+    statement: str,
+    _parameters: Any,
+    _context: Any,
+    _executemany: bool,
+) -> None:
     start_time = conn.info.setdefault("query_start_time", []).pop(-1)
     duration_ms = (perf_counter() - start_time) * 1000
     if duration_ms >= settings.SLOW_QUERY_THRESHOLD_MS:
@@ -40,7 +57,7 @@ def _after_cursor_execute(conn, cursor, statement, parameters, context, executem
         )
 
 
-async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+async def get_async_session() -> AsyncGenerator[AsyncSession]:
     async with async_session() as session:
         yield session
 

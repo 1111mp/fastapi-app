@@ -3,9 +3,9 @@ import structlog
 logger = structlog.get_logger("scheduler.jobs")
 
 
-async def async_job():
+async def async_job() -> None:
     logger.info("async_job started")
 
 
-def sync_job():
+def sync_job() -> None:
     logger.info("sync_job started")

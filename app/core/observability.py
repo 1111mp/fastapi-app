@@ -12,7 +12,7 @@ from app.core.redis import redis_client
 logger = structlog.get_logger("observability")
 
 
-def setup_metrics(app: FastAPI):
+def setup_metrics(app: FastAPI) -> None:
     """Set up Prometheus metrics collection and exposition"""
     if not settings.METRICS_ENABLED:
         logger.info("Metrics collection is disabled")
@@ -44,7 +44,7 @@ def build_ops_router() -> APIRouter:
         }
         status_code = status.HTTP_200_OK
 
-        async def check_db():
+        async def check_db() -> int:
             try:
                 await check_db_connection()
             except Exception as exc:
@@ -52,7 +52,7 @@ def build_ops_router() -> APIRouter:
                 return status.HTTP_503_SERVICE_UNAVAILABLE
             return status.HTTP_200_OK
 
-        async def check_redis():
+        async def check_redis() -> int:
             try:
                 redis = await redis_client.get_redis()
                 await redis.ping()  # type: ignore

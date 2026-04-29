@@ -10,14 +10,14 @@ from tests.utils.utils import login_superuser
 
 
 @pytest.fixture(scope="module")
-def client() -> Generator[TestClient, None, None]:
+def client() -> Generator[TestClient]:
     """Create a TestClient for the FastAPI app."""
     with TestClient(app) as c:
         yield c
 
 
 @pytest_asyncio.fixture(scope="module")
-async def async_client() -> AsyncGenerator[AsyncClient, None]:
+async def async_client() -> AsyncGenerator[AsyncClient]:
     async with AsyncClient(
         transport=ASGITransport(app),
         base_url="http://testserver",
@@ -26,7 +26,7 @@ async def async_client() -> AsyncGenerator[AsyncClient, None]:
 
 
 @pytest_asyncio.fixture(scope="function")
-async def unauthenticated_client() -> AsyncGenerator[AsyncClient, None]:
+async def unauthenticated_client() -> AsyncGenerator[AsyncClient]:
     async with AsyncClient(
         transport=ASGITransport(app),
         base_url="http://testserver",

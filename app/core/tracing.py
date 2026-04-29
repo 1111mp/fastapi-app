@@ -7,7 +7,11 @@ from opentelemetry.instrumentation.redis import RedisInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from opentelemetry.sdk.trace.export import (
+    BatchSpanProcessor,
+    ConsoleSpanExporter,
+    SpanExporter,
+)
 from opentelemetry.sdk.trace.sampling import TraceIdRatioBased
 
 from app.core.config import settings
@@ -32,6 +36,7 @@ def setup_tracing(app: FastAPI) -> None:
         sampler=TraceIdRatioBased(0.1),  # Sample 10% of traces, adjust as needed
     )
 
+    exporter: SpanExporter
     if settings.OTEL_EXPORTER_OTLP_ENDPOINT:
         logger.info(
             "Configuring OTLP exporter",

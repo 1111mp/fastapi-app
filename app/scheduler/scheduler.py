@@ -6,7 +6,7 @@ from .jobs import async_job, sync_job
 scheduler = AsyncIOScheduler()
 
 
-def start_scheduler():
+def start_scheduler() -> None:
     scheduler.add_job(
         async_job,
         trigger=IntervalTrigger(seconds=30),
@@ -25,5 +25,5 @@ def start_scheduler():
     scheduler.start()
 
 
-def shutdown_scheduler():
+def shutdown_scheduler() -> None:
     scheduler.shutdown()

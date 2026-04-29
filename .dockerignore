@@ -1,0 +1,14 @@
+# Python
+__pycache__
+.mypy_cache
+.pytest_cache
+.ruff_cache
+app.egg-info
+logs
+*.pyc
+.mypy_cache
+.coverage
+htmlcov
+coverage.xml
+.venv
+.DS_Store

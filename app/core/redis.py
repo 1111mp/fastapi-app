@@ -7,10 +7,10 @@ logger = structlog.get_logger("redis")
 class RedisClient:
     """Redis client wrapper for asyncio."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.client: redis.Redis | None = None
 
-    async def init(self, url: str):
+    async def init(self, url: str) -> None:
         """Initialize the Redis client from the given URL."""
 
         logger.info("Initializing Redis client")
@@ -24,7 +24,7 @@ class RedisClient:
         await self.client.ping()  # type: ignore
         logger.info("Redis client connected")
 
-    async def close(self):
+    async def close(self) -> None:
         """Close the Redis connection."""
         if self.client:
             await self.client.close(True)
