@@ -1,5 +1,5 @@
 import structlog
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -7,7 +7,7 @@ logger = structlog.get_logger("api.exceptions")
 
 
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    status_code = 500
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     detail = "Internal Server Error"
     payload = None
 
@@ -16,7 +16,7 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
         detail = exc.detail
 
     elif isinstance(exc, RequestValidationError):
-        status_code = 422
+        status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
         detail = "Validation Error"
         payload = exc.errors()
 

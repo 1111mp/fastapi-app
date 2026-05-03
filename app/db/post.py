@@ -1,4 +1,5 @@
 from collections.abc import AsyncGenerator
+from typing import Any
 from uuid import UUID
 
 from fastapi import Depends
@@ -35,6 +36,13 @@ class SQLAlchemyPostDatabase:
             created_by_id=user_id,
         )
         self.session.add(post)
+        await self.session.commit()
+        await self.session.refresh(post)
+        return post
+
+    async def update(self, post: Post, update_dict: dict[str, Any]) -> Post:
+        for key, value in update_dict.items():
+            setattr(post, key, value)
         await self.session.commit()
         await self.session.refresh(post)
         return post

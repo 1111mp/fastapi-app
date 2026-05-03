@@ -14,7 +14,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 import app.models  # noqa
-from app.db.base import Base  # noqa
+from app.models.base import Base  # noqa
 from app.core.config import settings  # noqa
 
 # add your model's MetaData object here
